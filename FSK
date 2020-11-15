@@ -1,0 +1,78 @@
+clc;
+clear all;
+close all;
+x=[ 1 1 0 0 1 0 1];
+bp=.0001;
+bit=[];
+for n=1:1:length(x)
+    if x(n)==1;
+       se=ones(1,100);
+    else x(n)==0;
+        se=zeros(1,100);
+    end
+     bit=[bit se];
+end
+t1=bp/100:bp/100:length(x)*(bp);
+figure(1)
+plot(t1,bit);grid on;
+ylabel('amplitude(volt)');
+xlabel(' time(sec)');
+title('transmitting information as digital signal');
+
+A=5;
+br=1/bp;
+f1=br*10;
+f2=br*1;
+t2=bp/99:bp/99:bp;
+ss=length(t2);
+m=[];
+for (i=1:1:length(x))
+    if (x(i)==1)
+        y=A*cos(2*pi*f1*t2);
+    else
+        y=A*cos(2*pi*f2*t2);
+    end
+    m=[m y];
+end
+t3=bp/99:bp/99:bp*length(x);
+figure(2)
+plot(t3,m);
+xlabel('time(sec)');
+ylabel('amplitude(volt)');
+title('waveform for binary FSK modulation corresponding binary information');
+
+mn=[];
+y1=cos(2*pi*f1*t2);
+y2=cos(2*pi*f2*t2);
+for n=ss:ss:length(m)
+  mm=y1.*m((n-(ss-1)):n);
+  mmm=y2.*m((n-(ss-1)):n);
+  t4=bp/99:bp/99:bp;
+  z1=trapz(t4,mm);
+  z2=trapz(t4,mmm);
+  zz1=round(2*z1/bp);
+  zz2= round(2*z2/bp);
+  if(zz1>A/2)     
+    a=1;
+  else(zz2>A/2)
+    a=0;
+  end
+  mn=[mn a];
+end
+disp(' Binary information at Receiver :');
+disp(mn);
+
+bit=[];
+for n=1:length(mn);
+    if mn(n)==1;
+       se=ones(1,100);
+    else mn(n)==0;
+        se=zeros(1,100);
+    end
+     bit=[bit se];
+end
+figure(3)
+plot(t1,bit);grid on;
+ylabel('amplitude(volt)');
+xlabel(' time(sec)');
+title('received information as digital signal after binary FSK demodulation');
